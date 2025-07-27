@@ -14,7 +14,7 @@ import static io.restassured.RestAssured.given;
 
 public class ResourceTest {
 
-    int pageNumber = 1;
+    int pageNumber = 2;
 
     @Test
     public void checkPageNumber() {
