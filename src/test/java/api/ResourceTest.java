@@ -38,13 +38,25 @@ public class ResourceTest {
 
     @Test
     public void checkYearSort() {
+        Specifications.installSpecification(Specifications
+                .requestSpec(), Specifications.responseStatus(200));
 
+        List<Data> resource = given()
+                .when()
+                .get("api/resource?page=" + pageNumber)
+                .then().log().all()
+                .extract().body().jsonPath().getList("data", Data.class);
+
+        List<Integer> years = resource.stream().map(Data::getYear).collect(Collectors.toList());
+        List<Integer> sortedYears = years.stream().sorted().collect(Collectors.toList());
+
+        Assert.assertEquals(sortedYears, years);
     }
 
     @Test
     public void checkPantoneValueFormat() {
         Specifications.installSpecification(Specifications
-                .requestSpec(Specifications.URL), Specifications.responseStatus(200));
+                .requestSpec(), Specifications.responseStatus(200));
 
         String regex = "^\\d{2}-\\d{4}$";
 
@@ -61,7 +73,7 @@ public class ResourceTest {
     @Test
     public void checkConformColorAndName() {
         Specifications.installSpecification(Specifications
-                .requestSpec(Specifications.URL), Specifications.responseStatus(200));
+                .requestSpec(), Specifications.responseStatus(200));
 
         List<Data> resource = given()
                 .when()

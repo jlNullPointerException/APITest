@@ -11,7 +11,7 @@ public class Specifications {
 
     public static final String URL = "https://reqres.in/";
 
-    public static RequestSpecification requestSpec(String url) {
+    public static RequestSpecification requestSpec() {
         return new RequestSpecBuilder()
                 .setBaseUri(URL)
                 .setContentType(ContentType.JSON)
