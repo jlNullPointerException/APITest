@@ -10,6 +10,9 @@ public class Root {
     private ArrayList<Data> data;
     private Support support;
 
+    public Root() {
+    }
+
     public Root(Integer page, Integer per_page, Integer total, Integer total_pages, ArrayList<Data> data, Support support) {
         this.page = page;
         this.per_page = per_page;

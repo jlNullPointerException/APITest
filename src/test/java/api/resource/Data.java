@@ -1,7 +1,5 @@
 package api.resource;
 
-
-
 public class Data {
     private Integer id;
     private String name;

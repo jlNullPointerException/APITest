@@ -3,6 +3,9 @@ package api;
 import api.common.Specifications;
 import api.common.TestData;
 import api.resource.Data;
+import api.resource.Root;
+import api.resource.Support;
+import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -13,27 +16,80 @@ import java.util.stream.Collectors;
 import static io.restassured.RestAssured.given;
 
 public class ResourceTest {
-
-    int pageNumber = 2;
+    static int pageNumber = 2;
 
     @Test
     public void checkPageNumber() {
+        Specifications.installSpecification(Specifications
+                .requestSpec(), Specifications.responseStatus(200));
 
+        int page = given()
+                .when()
+                .get("api/resource?page=" + pageNumber)
+                .then().log().all()
+                .extract().body().jsonPath().getInt("page");
+
+        Assert.assertEquals(page, pageNumber);
     }
 
     @Test
     public void checkAmountPerPage() {
+        int expectedAmount = 6;
 
+        Specifications.installSpecification(Specifications
+                .requestSpec(), Specifications.responseStatus(200));
+
+        Response response = given()
+                .when()
+                .get("api/resource?page=" + pageNumber)
+                .then().log().all()
+                .extract().response();
+
+        int perPage = response.jsonPath().getInt("per_page");
+        int amountInData = response.jsonPath().getList("data", Data.class).size();
+
+        Assert.assertEquals(perPage, expectedAmount);
+        Assert.assertEquals(amountInData, perPage);
     }
 
     @Test
     public void checkTotalAmount() {
+        Specifications.installSpecification(Specifications
+                .requestSpec(), Specifications.responseStatus(200));
+
+        Root response = given()
+                .when()
+                .get("api/resource?page=" + pageNumber)
+                .then().log().all()
+                .extract().response().as(Root.class);
+
+        int perPage = response.getPer_page();
+        int totalPages = response.getTotal_pages();
+        int total = response.getTotal();
+
+        Assert.assertEquals(total, perPage * totalPages);
 
     }
 
     @Test
     public void checkSupport() {
+        String expectedUrl = "https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral";
+        String expectedText = "Tired of writing endless social media content? Let Content Caddy generate it for you.";
 
+        Specifications.installSpecification(Specifications
+                .requestSpec(), Specifications.responseStatus(200));
+
+        Support support = given()
+                .when()
+                .get("api/resource?page=" + pageNumber)
+                .then().log().all()
+                .extract().response().as(Root.class).getSupport();
+
+        String actualUrl = support.getUrl();
+        String actualText = support.getText();
+
+        Assert.assertEquals(actualUrl, expectedUrl);
+        Assert.assertEquals(actualText, expectedText);
     }
 
     @Test
@@ -50,15 +106,15 @@ public class ResourceTest {
         List<Integer> years = resource.stream().map(Data::getYear).collect(Collectors.toList());
         List<Integer> sortedYears = years.stream().sorted().collect(Collectors.toList());
 
-        Assert.assertEquals(sortedYears, years);
+        Assert.assertEquals(years, sortedYears);
     }
 
     @Test
     public void checkPantoneValueFormat() {
+        String regex = "^\\d{2}-\\d{4}$";
+
         Specifications.installSpecification(Specifications
                 .requestSpec(), Specifications.responseStatus(200));
-
-        String regex = "^\\d{2}-\\d{4}$";
 
         List<Data> resource = given()
                 .when()
