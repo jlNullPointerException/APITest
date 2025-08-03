@@ -9,13 +9,13 @@ import io.restassured.specification.ResponseSpecification;
 
 public class Specifications {
 
-    public static final String URL = "https://reqres.in/";
+    private static final String URL = "https://reqres.in/api/";
 
     public static RequestSpecification requestSpec() {
         return new RequestSpecBuilder()
                 .setBaseUri(URL)
                 .setContentType(ContentType.JSON)
-                .addHeader("x-api-key", "reqres-free-v1")
+                .addHeader(ProjectUtils.getLogin(), ProjectUtils.getPassword())
                 .build();
     }
 

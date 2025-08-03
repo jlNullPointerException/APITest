@@ -17,15 +17,15 @@ import static io.restassured.RestAssured.given;
 
 public class ResourceTest {
     static int pageNumber = 2;
+    static int resourceId = 4;
 
     @Test
     public void checkPageNumber() {
-        Specifications.installSpecification(Specifications
-                .requestSpec(), Specifications.responseStatus(200));
+        Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(200));
 
         int page = given()
                 .when()
-                .get("api/resource?page=" + pageNumber)
+                .get("resource?page=" + pageNumber)
                 .then().log().all()
                 .extract().body().jsonPath().getInt("page");
 
@@ -36,12 +36,11 @@ public class ResourceTest {
     public void checkAmountPerPage() {
         int expectedAmount = 6;
 
-        Specifications.installSpecification(Specifications
-                .requestSpec(), Specifications.responseStatus(200));
+        Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(200));
 
         Response response = given()
                 .when()
-                .get("api/resource?page=" + pageNumber)
+                .get("resource?page=" + pageNumber)
                 .then().log().all()
                 .extract().response();
 
@@ -54,12 +53,11 @@ public class ResourceTest {
 
     @Test
     public void checkTotalAmount() {
-        Specifications.installSpecification(Specifications
-                .requestSpec(), Specifications.responseStatus(200));
+        Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(200));
 
         Root response = given()
                 .when()
-                .get("api/resource?page=" + pageNumber)
+                .get("resource?page=" + pageNumber)
                 .then().log().all()
                 .extract().response().as(Root.class);
 
@@ -76,12 +74,11 @@ public class ResourceTest {
         String expectedUrl = "https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral";
         String expectedText = "Tired of writing endless social media content? Let Content Caddy generate it for you.";
 
-        Specifications.installSpecification(Specifications
-                .requestSpec(), Specifications.responseStatus(200));
+        Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(200));
 
         Support support = given()
                 .when()
-                .get("api/resource?page=" + pageNumber)
+                .get("resource?page=" + pageNumber)
                 .then().log().all()
                 .extract().response().as(Root.class).getSupport();
 
@@ -94,12 +91,11 @@ public class ResourceTest {
 
     @Test
     public void checkYearSort() {
-        Specifications.installSpecification(Specifications
-                .requestSpec(), Specifications.responseStatus(200));
+        Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(200));
 
         List<Data> resource = given()
                 .when()
-                .get("api/resource?page=" + pageNumber)
+                .get("resource?page=" + pageNumber)
                 .then().log().all()
                 .extract().body().jsonPath().getList("data", Data.class);
 
@@ -113,12 +109,11 @@ public class ResourceTest {
     public void checkPantoneValueFormat() {
         String regex = "^\\d{2}-\\d{4}$";
 
-        Specifications.installSpecification(Specifications
-                .requestSpec(), Specifications.responseStatus(200));
+        Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(200));
 
         List<Data> resource = given()
                 .when()
-                .get("api/resource?page=" + pageNumber)
+                .get("resource?page=" + pageNumber)
                 .then().log().all()
                 .extract().body().jsonPath().getList("data", Data.class);
 
@@ -128,12 +123,11 @@ public class ResourceTest {
 
     @Test
     public void checkConformColorAndName() {
-        Specifications.installSpecification(Specifications
-                .requestSpec(), Specifications.responseStatus(200));
+        Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(200));
 
         List<Data> resource = given()
                 .when()
-                .get("api/resource?page=" + pageNumber)
+                .get("resource?page=" + pageNumber)
                 .then().log().all()
                 .extract().body().jsonPath().getList("data", Data.class);
 
@@ -143,5 +137,14 @@ public class ResourceTest {
         Assert.assertTrue(colorAndName.entrySet().stream()
                 .allMatch(x -> x.getValue()
                         .equals(TestData.actualColorMapping.get(x.getKey()))));
+    }
+
+    @Test
+    public void deleteResource() {
+        Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(204));
+        given()
+                .when()
+                .delete("resource?id=" + resourceId)
+                .then().log().all();
     }
 }
