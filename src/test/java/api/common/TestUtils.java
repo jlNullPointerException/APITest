@@ -1,8 +1,10 @@
 package api.common;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
-public class TestData {
+public class TestUtils {
     public static Map<String, String> actualColorMapping = Map.ofEntries(
             Map.entry("cerulean", "#98B2D1"),
             Map.entry("fuchsia rose", "#C74375"),
@@ -18,5 +20,14 @@ public class TestData {
             Map.entry("honeysuckle", "#D94F70")
     );
 
+    public static OffsetDateTime roundMinuteDateTime(String time) {
+        OffsetDateTime odt = OffsetDateTime.parse(time);
+
+        if (odt.getSecond() >= 30 || (odt.getSecond() == 29 && odt.getNano() > 0)) {
+            odt = odt.plusMinutes(1);
+        }
+
+        return odt.truncatedTo(ChronoUnit.MINUTES);
+    }
 
 }

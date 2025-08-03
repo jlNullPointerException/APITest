@@ -1,14 +1,16 @@
 package api;
 
 import api.common.Specifications;
-import api.common.TestData;
+import api.common.TestUtils;
 import api.resource.Data;
 import api.resource.Root;
+import api.resource.SuccessfulUpdate;
 import api.resource.Support;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -136,7 +138,21 @@ public class ResourceTest {
 
         Assert.assertTrue(colorAndName.entrySet().stream()
                 .allMatch(x -> x.getValue()
-                        .equals(TestData.actualColorMapping.get(x.getKey()))));
+                        .equals(TestUtils.actualColorMapping.get(x.getKey()))));
+    }
+
+    @Test
+    public void patchResource() {
+      Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(200));
+
+        String currentTime = Clock.systemUTC().instant().toString();
+        String responseTime = given()
+                .when()
+                .patch("resource/" + resourceId)
+                .then().log().all()
+                .extract().response().as(SuccessfulUpdate.class).getUpdatedAt();
+
+        Assert.assertEquals(TestUtils.roundMinuteDateTime(responseTime), TestUtils.roundMinuteDateTime(currentTime));
     }
 
     @Test
