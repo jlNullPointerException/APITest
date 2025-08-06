@@ -1,5 +1,6 @@
 package api.common;
 
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -19,6 +20,10 @@ public class TestUtils {
             Map.entry("turquoise", "#45B5AA"),
             Map.entry("honeysuckle", "#D94F70")
     );
+
+    public static String getCurrentTime() {
+        return Clock.systemUTC().instant().toString();
+    }
 
     public static OffsetDateTime roundMinuteDateTime(String time) {
         OffsetDateTime odt = OffsetDateTime.parse(time);

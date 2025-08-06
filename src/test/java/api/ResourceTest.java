@@ -10,16 +10,16 @@ import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 
-public class ResourceTest {
-    static int pageNumber = 2;
-    static int resourceId = 4;
+public class ResourceTest extends BaseTest{
+    private static final int PAGE_NUMBER = 2;
+    private static final int RESOURCE_ID = 4;
+    private static final String COMMON_PATH = "resource";
 
     @Test
     public void checkPageNumber() {
@@ -27,11 +27,11 @@ public class ResourceTest {
 
         int page = given()
                 .when()
-                .get("resource?page=" + pageNumber)
+                .get(COMMON_PATH + "?page=" + PAGE_NUMBER)
                 .then().log().all()
                 .extract().body().jsonPath().getInt("page");
 
-        Assert.assertEquals(page, pageNumber);
+        Assert.assertEquals(page, PAGE_NUMBER);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class ResourceTest {
 
         Response response = given()
                 .when()
-                .get("resource?page=" + pageNumber)
+                .get(COMMON_PATH + "?page=" + PAGE_NUMBER)
                 .then().log().all()
                 .extract().response();
 
@@ -59,7 +59,7 @@ public class ResourceTest {
 
         Root response = given()
                 .when()
-                .get("resource?page=" + pageNumber)
+                .get(COMMON_PATH + "?page=" + PAGE_NUMBER)
                 .then().log().all()
                 .extract().response().as(Root.class);
 
@@ -80,7 +80,7 @@ public class ResourceTest {
 
         Support support = given()
                 .when()
-                .get("resource?page=" + pageNumber)
+                .get(COMMON_PATH + "?page=" + PAGE_NUMBER)
                 .then().log().all()
                 .extract().response().as(Root.class).getSupport();
 
@@ -97,7 +97,7 @@ public class ResourceTest {
 
         List<Data> resource = given()
                 .when()
-                .get("resource?page=" + pageNumber)
+                .get(COMMON_PATH + "?page=" + PAGE_NUMBER)
                 .then().log().all()
                 .extract().body().jsonPath().getList("data", Data.class);
 
@@ -115,7 +115,7 @@ public class ResourceTest {
 
         List<Data> resource = given()
                 .when()
-                .get("resource?page=" + pageNumber)
+                .get(COMMON_PATH + "?page=" + PAGE_NUMBER)
                 .then().log().all()
                 .extract().body().jsonPath().getList("data", Data.class);
 
@@ -129,7 +129,7 @@ public class ResourceTest {
 
         List<Data> resource = given()
                 .when()
-                .get("resource?page=" + pageNumber)
+                .get(COMMON_PATH + "?page=" + PAGE_NUMBER)
                 .then().log().all()
                 .extract().body().jsonPath().getList("data", Data.class);
 
@@ -145,14 +145,14 @@ public class ResourceTest {
     public void patchResource() {
       Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(200));
 
-        String currentTime = Clock.systemUTC().instant().toString();
+        String expectedTime = TestUtils.getCurrentTime();
         String responseTime = given()
                 .when()
-                .patch("resource/" + resourceId)
+                .patch(COMMON_PATH + "/" + RESOURCE_ID)
                 .then().log().all()
                 .extract().response().as(SuccessfulUpdate.class).getUpdatedAt();
 
-        Assert.assertEquals(TestUtils.roundMinuteDateTime(responseTime), TestUtils.roundMinuteDateTime(currentTime));
+        Assert.assertEquals(TestUtils.roundMinuteDateTime(responseTime), TestUtils.roundMinuteDateTime(expectedTime));
     }
 
     @Test
@@ -160,7 +160,7 @@ public class ResourceTest {
         Specifications.installSpecification(Specifications.requestSpec(), Specifications.responseStatus(204));
         given()
                 .when()
-                .delete("resource?id=" + resourceId)
+                .delete(COMMON_PATH + "?id=" + RESOURCE_ID)
                 .then().log().all();
     }
 }
